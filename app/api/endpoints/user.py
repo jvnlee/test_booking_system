@@ -1,11 +1,8 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 from app.api.deps import get_db
 from app.schema.user import UserCreate, UserRead
-from app.service.exception.DuplicateNameException import DuplicateNameException
-from app.service.exception.DuplicateUsernameException import DuplicateUsernameException
 from app.service.user import create_user
-
 
 router = APIRouter()
 
@@ -15,7 +12,4 @@ def create_user_endpoint(
         user_create: UserCreate,
         db: Session = Depends(get_db)
 ):
-    try:
-        return create_user(db, user_create)
-    except (DuplicateUsernameException, DuplicateNameException) as e:
-        raise HTTPException(status_code=400, detail=str(e))
+    return create_user(db, user_create)
