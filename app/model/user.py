@@ -15,7 +15,7 @@ class User(Base):
     id = Column(Integer, primary_key=True, autoincrement=True)
     username = Column(String, unique=True, nullable=False)
     password = Column(String, nullable=False)
-    name = Column(String, nullable=False)
+    name = Column(String, unique=True, nullable=False)
     role = Column(Enum(RoleEnum, native_enum=False), nullable=False, default=RoleEnum.company.value)
 
     reservations = relationship('Reservation', back_populates='user')
