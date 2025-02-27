@@ -1,8 +1,9 @@
 from fastapi import FastAPI
 from app.api.endpoints import user
+from app.db.init_admin import init_admin
 
 
-app = FastAPI()
+init_admin()
 
 app = FastAPI(
     title="Test Booking System",
