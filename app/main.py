@@ -1,5 +1,5 @@
 from fastapi import FastAPI
-from app.api.endpoints import user
+from app.api.endpoints import user, login
 from app.core.exception_handler import register_exception_handlers
 from app.db.init_admin import init_admin
 
@@ -17,4 +17,9 @@ app.include_router(
     user.router,
     prefix="/users",
     tags=["Users"]
+)
+
+app.include_router(
+    login.router,
+    tags=["Login"]
 )
