@@ -13,4 +13,5 @@ def login_endpoint(
         db: Session = Depends(deps.get_db)
 ):
     access_token = login(db, request.username, request.password)
+
     return LoginResponse(access_token=access_token)
