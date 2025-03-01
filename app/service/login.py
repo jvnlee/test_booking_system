@@ -10,4 +10,4 @@ def login(db: Session, username: str, password: str):
     if not user or not verify_password(password, user.password):
         raise LoginException()
 
-    return create_access_token({"sub": user.username})
+    return create_access_token(username)
