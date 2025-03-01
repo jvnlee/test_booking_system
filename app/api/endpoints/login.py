@@ -14,4 +14,7 @@ def login_endpoint(
 ):
     access_token = login(db, request.username, request.password)
 
-    return LoginResponse(access_token=access_token)
+    return LoginResponse(
+        access_token=access_token,
+        token_type="Bearer"
+    )
