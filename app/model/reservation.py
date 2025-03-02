@@ -17,7 +17,6 @@ class Reservation(Base):
 
     id = Column(Integer, primary_key=True, autoincrement=True)
     user_id = Column(Integer, ForeignKey('users.id'), nullable=False)
-    test_schedule_id = Column(Integer, ForeignKey('test_schedules.id'), nullable=False)
     participant_num = Column(Integer, nullable=False)  # 시험 응시 인원
     status = Column(Enum(ReservationStatus, native_enum=False), nullable=False, default=ReservationStatus.REQUESTED.value)  # 예약 확정 여부
 
