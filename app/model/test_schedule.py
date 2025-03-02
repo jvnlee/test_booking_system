@@ -8,7 +8,7 @@ class TestSchedule(Base):
     __tablename__ = 'test_schedules'
 
     id = Column(Integer, primary_key=True, autoincrement=True)
-    time = Column(DateTime, unique=True, nullable=False)  # 시험 일시
+    date_time = Column(DateTime, unique=True, nullable=False)  # 시험 일시
     remaining_capacity = Column(Integer, nullable=False, default=50000)  # 남은 수용 가능 인원
 
     reservations = relationship(

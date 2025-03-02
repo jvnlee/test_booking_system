@@ -30,7 +30,7 @@ def read_available_test_schedules_endpoint(
     return ReadAvailableTestSchedulesResponse(
         schedules=[
             TestScheduleItem(
-                time=schedule.time,
+                date_time=schedule.date_time,
                 remaining_capacity=schedule.remaining_capacity
             ) for schedule in available_test_schedules
         ]

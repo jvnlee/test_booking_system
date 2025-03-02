@@ -5,7 +5,7 @@ from pydantic import BaseModel, Field
 
 
 class TestScheduleItem(BaseModel):
-    time: datetime = Field(..., examples=["2025-03-01T14:00:00"])
+    date_time: datetime = Field(..., examples=["2025-03-01T14:00:00"])
     remaining_capacity: int = Field(..., examples=[50000])
 
 

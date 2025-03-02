@@ -41,7 +41,7 @@ def init_test_schedules():
         current_time = start_date
 
         while current_time <= end_date:
-            schedules.append(TestSchedule(time=current_time))
+            schedules.append(TestSchedule(date_time=current_time))
             current_time += timedelta(hours=1)
 
         db.bulk_save_objects(schedules)
