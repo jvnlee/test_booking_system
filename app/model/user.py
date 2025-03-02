@@ -4,9 +4,9 @@ from sqlalchemy.orm import relationship
 from app.db.base import Base
 
 
-class RoleEnum(str, enum.Enum):
-    admin = 'admin'
-    company = 'company'
+class UserRole(str, enum.Enum):
+    ADMIN = 'admin'
+    COMPANY = 'company'
 
 
 class User(Base):
@@ -16,6 +16,6 @@ class User(Base):
     username = Column(String, unique=True, nullable=False)
     password = Column(String, nullable=False)
     name = Column(String, unique=True, nullable=False)
-    role = Column(Enum(RoleEnum, native_enum=False), nullable=False, default=RoleEnum.company.value)
+    role = Column(Enum(UserRole, native_enum=False), nullable=False, default=UserRole.COMPANY.value)
 
     reservations = relationship('Reservation', back_populates='user')

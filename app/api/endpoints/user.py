@@ -4,6 +4,7 @@ from app.api.deps import get_db
 from app.schema.user import CreateUserRequest, CreateUserResponse
 from app.service.user import create_user
 
+
 router = APIRouter()
 
 

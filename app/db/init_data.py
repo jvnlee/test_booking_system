@@ -4,7 +4,7 @@ from datetime import datetime, timezone, timedelta
 from sqlalchemy.orm import Session
 from app.db.session import SessionLocal
 from app.model import TestSchedule
-from app.model.user import User, RoleEnum
+from app.model.user import User, UserRole
 from app.core.security import hash_password
 
 
@@ -21,7 +21,7 @@ def init_admin():
             username="admin",
             password=hash_password(os.getenv("ADMIN_PASSWORD")),
             name="관리자",
-            role=RoleEnum.admin
+            role=UserRole.ADMIN
         )
         db.add(new_admin)
         db.commit()
