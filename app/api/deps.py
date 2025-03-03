@@ -4,7 +4,7 @@ from sqlalchemy.orm import Session
 from app.core.security import get_payload_from_access_token
 from app.db.session import SessionLocal
 from app.model import User
-from app.service.exception.InvalidTokenException import InvalidTokenException
+from app.service.exception.invalid_token_exception import InvalidTokenException
 
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="login")

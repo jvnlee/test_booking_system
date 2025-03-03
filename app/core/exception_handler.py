@@ -1,9 +1,9 @@
 from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
-from app.service.exception.DuplicateNameException import DuplicateNameException
-from app.service.exception.DuplicateUsernameException import DuplicateUsernameException
-from app.service.exception.InvalidTokenException import InvalidTokenException
-from app.service.exception.LoginException import LoginException
+from app.service.exception.duplicate_name_exception import DuplicateNameException
+from app.service.exception.duplicate_username_exception import DuplicateUsernameException
+from app.service.exception.invalid_token_exception import InvalidTokenException
+from app.service.exception.login_exception import LoginException
 from app.service.exception.test_schedule_not_found_exception import TestScheduleNotFoundException
 
 
