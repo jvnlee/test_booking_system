@@ -19,25 +19,9 @@ def create_reservation(
         end_time: time,
         participant_num: int
 ) -> Reservation:
-    today = date.today()
-
-    if desired_date - today < timedelta(days=3):
-        raise ReservationDeadlineExceededException()
-
-    start_datetime = datetime.combine(desired_date, start_time)
-    end_datetime = datetime.combine(desired_date, end_time)
-
-    test_schedules = db.query(TestSchedule).filter(
-        TestSchedule.date_time >= start_datetime,
-        TestSchedule.date_time < end_datetime
-    ).all()
-
-    if not test_schedules:
-        raise TestScheduleNotFoundException()
-
-    for schedule in test_schedules:
-        if schedule.remaining_capacity < participant_num:
-            raise NotEnoughParticipantCapacityException()
+    check_reservation_deadline(desired_date)
+    test_schedules = get_test_schedules(db, desired_date, start_time, end_time)
+    check_remaining_capacity(test_schedules, participant_num)
 
     new_reservation = Reservation(
         user_id=user_id,
@@ -99,17 +83,28 @@ def update_reservation(
     if not reservation:
         raise ReservationNotFoundException()
 
-    if not is_admin and reservation.user_id != user_id:
-        raise NotAuthorizedException()
+    check_update_availability(is_admin, reservation, user_id)
+    check_reservation_deadline(desired_date)
+    test_schedules = get_test_schedules(db, desired_date, start_time, end_time)
+    check_remaining_capacity(test_schedules, participant_num)
 
-    if reservation.status != ReservationStatus.REQUESTED:
-        raise ReservationAlreadyProcessedException()
+    reservation.test_schedules = test_schedules
+    reservation.participant_num = participant_num
 
+    db.commit()
+    db.refresh(reservation)
+
+    return reservation
+
+
+def check_reservation_deadline(desired_date: date):
     today = date.today()
 
     if desired_date - today < timedelta(days=3):
         raise ReservationDeadlineExceededException()
 
+
+def get_test_schedules(db: Session, desired_date, start_time: time, end_time: time) -> List[TestSchedule]:
     start_datetime = datetime.combine(desired_date, start_time)
     end_datetime = datetime.combine(desired_date, end_time)
 
@@ -121,14 +116,18 @@ def update_reservation(
     if not test_schedules:
         raise TestScheduleNotFoundException()
 
+    return test_schedules
+
+
+def check_remaining_capacity(test_schedules: List[TestSchedule], participant_num: int):
     for schedule in test_schedules:
         if schedule.remaining_capacity < participant_num:
             raise NotEnoughParticipantCapacityException()
 
-    reservation.test_schedules = test_schedules
-    reservation.participant_num = participant_num
 
-    db.commit()
-    db.refresh(reservation)
+def check_update_availability(is_admin: bool, reservation: Reservation, user_id: int):
+    if not is_admin and reservation.user_id != user_id:
+        raise NotAuthorizedException()
 
-    return reservation
+    if reservation.status != ReservationStatus.REQUESTED:
+        raise ReservationAlreadyProcessedException()
