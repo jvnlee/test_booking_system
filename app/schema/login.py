@@ -7,5 +7,9 @@ class LoginRequest(BaseModel):
 
 
 class LoginResponse(BaseModel):
-    access_token: str
-    token_type: str
+    access_token: str = Field(..., alias="accessToken")
+    token_type: str = Field(..., alias="tokenType")
+
+    class Config:
+        populate_by_name = True
+        by_alias = True

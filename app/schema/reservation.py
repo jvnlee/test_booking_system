@@ -17,7 +17,7 @@ class ReservationItem(BaseModel):
     reserved_date: date = Field(..., alias="reservedDate", examples=["2025-03-31"])
     reserved_times: List[time] = Field(..., alias="reservedTimes", examples=["14:00:00", "15:00:00"])
     reserved_participant_num: int = Field(..., alias="reservedParticipantNum", examples=["20000"])
-    reservation_status: ReservationStatus
+    reservation_status: ReservationStatus = Field(..., alias="reservationStatus", examples=["REQUESTED"])
 
     class Config:
         populate_by_name = True
