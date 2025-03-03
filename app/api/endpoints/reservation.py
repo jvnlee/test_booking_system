@@ -3,8 +3,9 @@ from sqlalchemy.orm import Session
 from app.api.deps import get_db, get_current_user
 from app.model import User
 from app.model.user import UserRole
-from app.schema.reservation import ReservationItem, CreateReservationRequest, ReadReservationsResponse
-from app.service.reservation import create_reservation, read_all_reservations
+from app.schema.reservation import ReservationItem, CreateReservationRequest, ReadReservationsResponse, \
+    UpdateReservationRequest
+from app.service.reservation import create_reservation, read_all_reservations, update_reservation
 
 router = APIRouter()
 
@@ -30,6 +31,7 @@ def create_reservation_endpoint(
 
     return ReservationItem(
         id=new_reservation.id,
+        reserved_user_name=new_reservation.user.name,
         reserved_date=request.desired_date,
         reserved_times=reserved_times,
         reserved_participant_num=request.participant_num,
@@ -66,4 +68,48 @@ def read_all_reservations_endpoint(
     return ReadReservationsResponse(
         reservations=reservation_items,
         total_count=total_count
+    )
+
+
+@router.put("/{reservation_id}", response_model=ReservationItem, status_code=200)
+def update_reservation_endpoint(
+        reservation_id: int,
+        request: UpdateReservationRequest,
+        db: Session = Depends(get_db),
+        user: User = Depends(get_current_user)
+):
+    if user.role == UserRole.ADMIN:
+        updated_reservation = update_reservation(
+            db,
+            user.id,
+            reservation_id,
+            request.desired_date,
+            request.start_time,
+            request.end_time,
+            request.participant_num,
+            is_admin=True
+        )
+    else:
+        updated_reservation = update_reservation(
+            db,
+            user.id,
+            reservation_id,
+            request.desired_date,
+            request.start_time,
+            request.end_time,
+            request.participant_num,
+            is_admin=False
+        )
+
+    reserved_times = [
+        schedule.date_time.time() for schedule in updated_reservation.test_schedules
+    ]
+
+    return ReservationItem(
+        id=updated_reservation.id,
+        reserved_user_name=updated_reservation.user.name,
+        reserved_date=request.desired_date,
+        reserved_times=reserved_times,
+        reserved_participant_num=request.participant_num,
+        reservation_status=updated_reservation.status
     )

@@ -31,3 +31,10 @@ class ReadReservationsResponse(BaseModel):
     class Config:
         populate_by_name = True
         by_alias = True
+
+
+class UpdateReservationRequest(BaseModel):
+    desired_date: date = Field(..., alias="desiredDate", examples=["2025-03-31"])
+    start_time: time = Field(..., alias="startTime", examples=["14:00:00"])
+    end_time: time = Field(..., alias="endTime", examples=["16:00:00"])
+    participant_num: int = Field(..., alias="participantNum", examples=["20000"])
