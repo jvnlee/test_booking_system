@@ -1,7 +1,7 @@
 from sqlalchemy.orm import Session
 from app.core.security import verify_password, create_access_token
 from app.model import User
-from app.service.exception.login_exception import LoginException
+from app.exception.login_exception import LoginException
 
 
 def login(db: Session, username: str, password: str):

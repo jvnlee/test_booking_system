@@ -2,8 +2,8 @@ from sqlalchemy import or_
 from sqlalchemy.orm import Session
 from app.core.security import hash_password
 from app.model.user import User
-from app.service.exception.duplicate_name_exception import DuplicateNameException
-from app.service.exception.duplicate_username_exception import DuplicateUsernameException
+from app.exception.duplicate_name_exception import DuplicateNameException
+from app.exception.duplicate_username_exception import DuplicateUsernameException
 
 
 def create_user(

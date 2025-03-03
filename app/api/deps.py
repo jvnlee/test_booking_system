@@ -5,8 +5,8 @@ from app.core.security import get_payload_from_access_token
 from app.db.session import SessionLocal
 from app.model import User
 from app.model.user import UserRole
-from app.service.exception.invalid_token_exception import InvalidTokenException
-from app.service.exception.not_authorized_exception import NotAuthorizedException
+from app.exception.invalid_token_exception import InvalidTokenException
+from app.exception.not_authorized_exception import NotAuthorizedException
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="login")
 
