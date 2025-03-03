@@ -99,6 +99,61 @@ def update_reservation(
     return reservation
 
 
+def confirm_reservation(
+        db: Session,
+        reservation_id: int
+):
+    reservation = (
+        db.query(Reservation)
+        .options(joinedload(Reservation.test_schedules))
+        .filter(Reservation.id == reservation_id)
+        .first()
+    )
+
+    if not reservation:
+        raise ReservationNotFoundException()
+
+    check_updatable_status(reservation)
+
+    participant_num = reservation.participant_num
+    for schedule in reservation.test_schedules:
+        check_remaining_capacity(schedule, participant_num)
+        schedule.remaining_capacity -= participant_num
+
+    reservation.status = ReservationStatus.CONFIRMED
+
+    db.commit()
+    db.refresh(reservation)
+
+    return reservation.status
+
+
+def cancel_reservation(
+        db: Session,
+        user: User,
+        reservation_id: int
+):
+    reservation = (
+        db
+        .query(Reservation)
+        .filter(Reservation.id == reservation_id)
+        .first()
+    )
+
+    if not reservation:
+        raise ReservationNotFoundException()
+
+    check_authorization(reservation, user)
+    check_updatable_status(reservation)
+
+    reservation.status = ReservationStatus.CANCELLED
+
+    db.commit()
+    db.refresh(reservation)
+
+    return reservation.status
+
+
 def check_reservation_deadline(desired_date: date):
     today = date.today()
 

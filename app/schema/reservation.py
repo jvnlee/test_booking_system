@@ -38,3 +38,11 @@ class UpdateReservationRequest(BaseModel):
     start_time: time = Field(..., alias="startTime", examples=["14:00:00"])
     end_time: time = Field(..., alias="endTime", examples=["16:00:00"])
     participant_num: int = Field(..., alias="participantNum", examples=["20000"])
+
+
+class UpdateReservationStatusResponse(BaseModel):
+    reservation_status: ReservationStatus = Field(..., alias="reservationStatus", examples=["CONFIRMED", "CANCELLED"])
+
+    class Config:
+        populate_by_name = True
+        by_alias = True

@@ -1,10 +1,11 @@
 from fastapi import APIRouter, Depends, Query
 from sqlalchemy.orm import Session
-from app.api.deps import get_db, get_current_user
+from app.api.deps import get_db, get_current_user, is_admin_user
 from app.model import User
 from app.schema.reservation import ReservationItem, CreateReservationRequest, ReadReservationsResponse, \
-    UpdateReservationRequest
-from app.service.reservation import create_reservation, read_all_reservations, update_reservation
+    UpdateReservationRequest, UpdateReservationStatusResponse
+from app.service.reservation import create_reservation, read_all_reservations, update_reservation, \
+    cancel_reservation, confirm_reservation
 
 router = APIRouter()
 
@@ -100,4 +101,37 @@ def update_reservation_endpoint(
         reserved_times=reserved_times,
         reserved_participant_num=request.participant_num,
         reservation_status=updated_reservation.status
+    )
+
+
+@router.patch("/{reservation_id}/confirm", status_code=200)
+def confirm_reservation_endpoint(
+        reservation_id: int,
+        db: Session = Depends(get_db),
+        _: User = Depends(is_admin_user)
+):
+    confirmed_status = confirm_reservation(
+        db,
+        reservation_id,
+    )
+
+    return UpdateReservationStatusResponse(
+        reservation_status=confirmed_status
+    )
+
+
+@router.patch("/{reservation_id}/cancel", status_code=200)
+def cancel_reservation_endpoint(
+        reservation_id: int,
+        db: Session = Depends(get_db),
+        user: User = Depends(get_current_user)
+):
+    cancelled_status = cancel_reservation(
+        db,
+        user,
+        reservation_id,
+    )
+
+    return UpdateReservationStatusResponse(
+        reservation_status=cancelled_status
     )
