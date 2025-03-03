@@ -4,8 +4,9 @@ from sqlalchemy.orm import Session
 from app.core.security import get_payload_from_access_token
 from app.db.session import SessionLocal
 from app.model import User
+from app.model.user import UserRole
 from app.service.exception.invalid_token_exception import InvalidTokenException
-
+from app.service.exception.not_authorized_exception import NotAuthorizedException
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="login")
 
@@ -37,5 +38,12 @@ def get_current_user(
 
     if not user:
         raise InvalidTokenException()
+
+    return user
+
+
+def is_admin_user(user: User = Depends(get_current_user)):
+    if user.role != UserRole.ADMIN:
+        raise NotAuthorizedException()
 
     return user
