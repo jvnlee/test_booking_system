@@ -1,5 +1,5 @@
 from fastapi import FastAPI
-from app.api.endpoints import user, login, test_schedule
+from app.api.endpoints import user, login, test_schedule, reservation
 from app.core.exception_handler import register_exception_handlers
 from app.db.init_data import init_admin, init_test_schedules
 
@@ -29,4 +29,10 @@ app.include_router(
     test_schedule.router,
     prefix="/test-schedules",
     tags=["Test Schedules"]
+)
+
+app.include_router(
+    reservation.router,
+    prefix="/reservations",
+    tags=["Reservations"]
 )
