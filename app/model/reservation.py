@@ -6,10 +6,10 @@ from app.model.reservation_test_schedule import reservation_test_schedule
 
 
 class ReservationStatus(str, enum.Enum):
-    REQUESTED = 'requested'
-    CONFIRMED = 'confirmed'
-    REJECTED = 'rejected'
-    CANCELLED = 'cancelled'
+    REQUESTED = 'REQUESTED'
+    CONFIRMED = 'CONFIRMED'
+    REJECTED = 'REJECTED'
+    CANCELLED = 'CANCELLED'
 
 
 class Reservation(Base):
