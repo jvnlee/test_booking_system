@@ -2,7 +2,6 @@ from fastapi import APIRouter, Depends, Query
 from sqlalchemy.orm import Session
 from app.api.deps import get_db, get_current_user
 from app.model import User
-from app.model.user import UserRole
 from app.schema.reservation import ReservationItem, CreateReservationRequest, ReadReservationsResponse, \
     UpdateReservationRequest
 from app.service.reservation import create_reservation, read_all_reservations, update_reservation
@@ -46,10 +45,12 @@ def read_all_reservations_endpoint(
         limit: int = Query(10, ge=1, le=100),
         offset: int = Query(0, ge=0)
 ):
-    if user.role == UserRole.ADMIN:
-        reservations, total_count = read_all_reservations(db, limit, offset, user_id=None, is_admin=True)
-    else:
-        reservations, total_count = read_all_reservations(db, limit, offset, user_id=user.id, is_admin=False)
+    reservations, total_count = read_all_reservations(
+        db,
+        limit,
+        offset,
+        user
+    )
 
     reservation_items = [
         ReservationItem(
@@ -78,28 +79,15 @@ def update_reservation_endpoint(
         db: Session = Depends(get_db),
         user: User = Depends(get_current_user)
 ):
-    if user.role == UserRole.ADMIN:
-        updated_reservation = update_reservation(
-            db,
-            user.id,
-            reservation_id,
-            request.desired_date,
-            request.start_time,
-            request.end_time,
-            request.participant_num,
-            is_admin=True
-        )
-    else:
-        updated_reservation = update_reservation(
-            db,
-            user.id,
-            reservation_id,
-            request.desired_date,
-            request.start_time,
-            request.end_time,
-            request.participant_num,
-            is_admin=False
-        )
+    updated_reservation = update_reservation(
+        db,
+        user,
+        reservation_id,
+        request.desired_date,
+        request.start_time,
+        request.end_time,
+        request.participant_num,
+    )
 
     reserved_times = [
         schedule.date_time.time() for schedule in updated_reservation.test_schedules

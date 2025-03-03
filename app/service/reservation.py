@@ -1,7 +1,7 @@
 from datetime import datetime, timedelta, date, time
 from typing import List, Tuple
 from sqlalchemy.orm import Session, joinedload
-from app.model import Reservation, TestSchedule
+from app.model import Reservation, TestSchedule, User
 from app.model.reservation import ReservationStatus
 from app.service.exception.not_authorized_exception import NotAuthorizedException
 from app.service.exception.not_enough_participant_capacity_exception import NotEnoughParticipantCapacityException
@@ -41,18 +41,15 @@ def read_all_reservations(
         db: Session,
         limit: int,
         offset: int,
-        user_id: int,
-        is_admin: bool
+        user: User
 ) -> Tuple[List[Reservation], int]:
     query = db.query(Reservation).options(
         joinedload(Reservation.user),
         joinedload(Reservation.test_schedules)
     )
 
-    if not is_admin and user_id is not None:
-        query = query.filter(
-            Reservation.user_id == user_id
-        )
+    if user.role != UserRole.ADMIN:
+        query = query.filter(Reservation.user_id == user.id)
 
     total_count = query.count()
 
@@ -68,13 +65,12 @@ def read_all_reservations(
 
 def update_reservation(
         db: Session,
-        user_id: int,
+        user: User,
         reservation_id: int,
         desired_date: date,
         start_time: time,
         end_time: time,
         participant_num: int,
-        is_admin: bool
 ):
     reservation = db.query(Reservation).filter(
         Reservation.id == reservation_id
