@@ -10,7 +10,16 @@ from app.service.reservation import create_reservation, read_all_reservations, u
 router = APIRouter()
 
 
-@router.post("/", response_model=ReservationItem, status_code=201)
+@router.post(
+    "/",
+    response_model=ReservationItem,
+    status_code=201,
+    summary="예약 신청",
+    description="""
+    예약은 시험 시작 3일 전까지 신청 가능합니다.  
+    <br>또한, 각 시간대의 잔여 수용 인원만큼만 신청 가능합니다. (동 시간대 최대 수용 인원: 5만명)
+    """
+)
 def create_reservation_endpoint(
         request: CreateReservationRequest,
         db: Session = Depends(get_db),
@@ -39,7 +48,16 @@ def create_reservation_endpoint(
     )
 
 
-@router.get("/", response_model=ReadReservationsResponse, status_code=200)
+@router.get(
+    "/",
+    response_model=ReadReservationsResponse,
+    status_code=200,
+    summary="예약 조회",
+    description="""
+    기업 고객(COMPANY): 본인이 신청한 예약만 조회 가능합니다.  
+    <br>관리자(ADMIN): 모든 예약을 조회할 수 있습니다.
+    """
+)
 def read_all_reservations_endpoint(
         db: Session = Depends(get_db),
         user: User = Depends(get_current_user),
@@ -73,7 +91,16 @@ def read_all_reservations_endpoint(
     )
 
 
-@router.put("/{reservation_id}", response_model=ReservationItem, status_code=200)
+@router.put(
+    "/{reservation_id}",
+    response_model=ReservationItem,
+    status_code=200,
+    summary="예약 수정",
+    description="""
+    기업 고객(COMPANY): 본인이 신청한 예약만 수정 가능합니다. 단, 예약 확정 전에만 수정이 가능합니다.  
+    <br>관리자(ADMIN): 모든 예약을 수정할 수 있습니다.
+    """
+)
 def update_reservation_endpoint(
         reservation_id: int,
         request: UpdateReservationRequest,
@@ -104,7 +131,16 @@ def update_reservation_endpoint(
     )
 
 
-@router.patch("/{reservation_id}/confirm", status_code=200)
+@router.patch(
+    "/{reservation_id}/confirm",
+    response_model=UpdateReservationStatusResponse,
+    status_code=200,
+    summary="예약 확정",
+    description="""
+    관리자(ADMIN) 전용 기능입니다.  
+    <br>예약을 확정하고, 응시 인원을 실제 시험 일정의 잔여 수용 인원에 반영합니다.
+    """
+)
 def confirm_reservation_endpoint(
         reservation_id: int,
         db: Session = Depends(get_db),
@@ -120,7 +156,15 @@ def confirm_reservation_endpoint(
     )
 
 
-@router.patch("/{reservation_id}/cancel", status_code=200)
+@router.patch(
+    "/{reservation_id}/cancel",
+    response_model=UpdateReservationStatusResponse,
+    status_code=200,
+    summary="예약 삭제",
+    description="""
+    예약을 삭제(취소 처리)합니다.
+    """
+)
 def cancel_reservation_endpoint(
         reservation_id: int,
         db: Session = Depends(get_db),

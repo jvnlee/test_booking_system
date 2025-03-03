@@ -8,7 +8,15 @@ from app.service.user import create_user
 router = APIRouter()
 
 
-@router.post("/", response_model=CreateUserResponse, status_code=201)
+@router.post(
+    "/",
+    response_model=CreateUserResponse,
+    status_code=201,
+    summary="회원가입",
+    description="""
+    회원가입 시 자동적으로 기업 고객(COMPANY)으로 가입됩니다.
+    """
+)
 def create_user_endpoint(
         request: CreateUserRequest,
         db: Session = Depends(get_db)
@@ -21,7 +29,6 @@ def create_user_endpoint(
     )
 
     return CreateUserResponse(
-        id=new_user.id,
         username=new_user.username,
         name=new_user.name,
     )
