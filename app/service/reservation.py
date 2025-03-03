@@ -1,5 +1,6 @@
 from datetime import datetime, timedelta, date, time
-from sqlalchemy.orm import Session
+from typing import List, Tuple
+from sqlalchemy.orm import Session, joinedload
 from app.model import Reservation, TestSchedule
 from app.service.exception.not_enough_participant_capacity_exception import NotEnoughParticipantCapacityException
 from app.service.exception.reservation_deadline_exceeded_exception import ReservationDeadlineExceededException
@@ -46,3 +47,32 @@ def create_reservation(
     db.refresh(new_reservation)
 
     return new_reservation
+
+
+def read_all_reservations(
+        db: Session,
+        limit: int,
+        offset: int,
+        user_id: int,
+        is_admin: bool
+) -> Tuple[List[Reservation], int]:
+    query = db.query(Reservation).options(
+        joinedload(Reservation.user),
+        joinedload(Reservation.test_schedules)
+    )
+
+    if not is_admin and user_id is not None:
+        query = query.filter(
+            Reservation.user_id == user_id
+        )
+
+    total_count = query.count()
+
+    reservations = (
+        query
+        .offset(offset)
+        .limit(limit)
+        .all()
+    )
+
+    return reservations, total_count

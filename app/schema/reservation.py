@@ -11,12 +11,22 @@ class CreateReservationRequest(BaseModel):
     participant_num: int = Field(..., alias="participantNum", examples=["20000"])
 
 
-class CreateReservationResponse(BaseModel):
+class ReservationItem(BaseModel):
     id: int
+    reserved_user_name: str = Field(..., alias="reservedUserName", examples=["grepp"])
     reserved_date: date = Field(..., alias="reservedDate", examples=["2025-03-31"])
-    reserved_times: List[time] = Field(..., alias="reservedTimes", examples=["14:00:00", "15:00:00", "16:00:00"])
+    reserved_times: List[time] = Field(..., alias="reservedTimes", examples=["14:00:00", "15:00:00"])
     reserved_participant_num: int = Field(..., alias="reservedParticipantNum", examples=["20000"])
     reservation_status: ReservationStatus
+
+    class Config:
+        populate_by_name = True
+        by_alias = True
+
+
+class ReadReservationsResponse(BaseModel):
+    reservations: List[ReservationItem]
+    total_count: int = Field(..., alias="totalCount")
 
     class Config:
         populate_by_name = True
