@@ -35,5 +35,5 @@ def read_available_test_schedules_endpoint(
     ]
 
     return ReadAvailableTestSchedulesResponse(
-        schedules=[test_schedule_items]
+        schedules=test_schedule_items
     )
