@@ -1,11 +1,10 @@
 from fastapi import FastAPI
 from app.api.endpoints import user, login, test_schedule, reservation
 from app.core.exception_handler import register_exception_handlers
-from app.db.init_data import init_admin, init_test_schedules
+from app.db.init import initialize_database
 
 
-init_admin()
-init_test_schedules()
+initialize_database()
 
 app = FastAPI(
     title="Test Booking System",

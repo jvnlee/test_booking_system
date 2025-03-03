@@ -2,10 +2,18 @@ import os
 from datetime import datetime, timezone, timedelta
 
 from sqlalchemy.orm import Session
-from app.db.session import SessionLocal
+
+from app.db.base import Base
+from app.db.session import SessionLocal, engine
 from app.model import TestSchedule
 from app.model.user import User, UserRole
 from app.core.security import hash_password
+
+
+# 모든 테이블과 데이터 초기화
+def reset_database():
+    Base.metadata.drop_all(bind=engine)
+    Base.metadata.create_all(bind=engine)
 
 
 # users 테이블에 admin user 레코드 1개 삽입
@@ -50,3 +58,9 @@ def init_test_schedules():
         db.rollback()
     finally:
         db.close()
+
+
+def initialize_database():
+    reset_database()
+    init_admin()
+    init_test_schedules()
