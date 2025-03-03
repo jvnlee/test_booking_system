@@ -3,6 +3,7 @@ from typing import List, Tuple
 from sqlalchemy.orm import Session, joinedload
 from app.model import Reservation, TestSchedule, User
 from app.model.reservation import ReservationStatus
+from app.model.user import UserRole
 from app.service.exception.not_authorized_exception import NotAuthorizedException
 from app.service.exception.not_enough_participant_capacity_exception import NotEnoughParticipantCapacityException
 from app.service.exception.reservation_already_processed_exception import ReservationAlreadyProcessedException
@@ -79,8 +80,10 @@ def update_reservation(
     if not reservation:
         raise ReservationNotFoundException()
 
-    check_update_availability(is_admin, reservation, user_id)
+    check_authorization(reservation, user)
+    check_updatable_status(reservation)
     check_reservation_deadline(desired_date)
+
     test_schedules = get_test_schedules(db, desired_date, start_time, end_time)
     check_remaining_capacity(test_schedules, participant_num)
 
@@ -121,9 +124,11 @@ def check_remaining_capacity(test_schedules: List[TestSchedule], participant_num
             raise NotEnoughParticipantCapacityException()
 
 
-def check_update_availability(is_admin: bool, reservation: Reservation, user_id: int):
-    if not is_admin and reservation.user_id != user_id:
+def check_authorization(reservation: Reservation, user: User):
+    if user.role != UserRole.ADMIN and reservation.user_id != user.id:
         raise NotAuthorizedException()
 
+
+def check_updatable_status(reservation: Reservation):
     if reservation.status != ReservationStatus.REQUESTED:
         raise ReservationAlreadyProcessedException()
