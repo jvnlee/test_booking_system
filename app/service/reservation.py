@@ -22,7 +22,9 @@ def create_reservation(
 ) -> Reservation:
     check_reservation_deadline(desired_date)
     test_schedules = get_test_schedules(db, desired_date, start_time, end_time)
-    check_remaining_capacity(test_schedules, participant_num)
+
+    for schedule in test_schedules:
+        check_remaining_capacity(schedule, participant_num)
 
     new_reservation = Reservation(
         user_id=user_id,
@@ -85,7 +87,8 @@ def update_reservation(
     check_reservation_deadline(desired_date)
 
     test_schedules = get_test_schedules(db, desired_date, start_time, end_time)
-    check_remaining_capacity(test_schedules, participant_num)
+    for schedule in test_schedules:
+        check_remaining_capacity(schedule, participant_num)
 
     reservation.test_schedules = test_schedules
     reservation.participant_num = participant_num
@@ -107,10 +110,14 @@ def get_test_schedules(db: Session, desired_date, start_time: time, end_time: ti
     start_datetime = datetime.combine(desired_date, start_time)
     end_datetime = datetime.combine(desired_date, end_time)
 
-    test_schedules = db.query(TestSchedule).filter(
-        TestSchedule.date_time >= start_datetime,
-        TestSchedule.date_time < end_datetime
-    ).all()
+    test_schedules = (
+        db.query(TestSchedule)
+        .filter(
+            TestSchedule.date_time >= start_datetime,
+            TestSchedule.date_time < end_datetime
+        )
+        .all()
+    )
 
     if not test_schedules:
         raise TestScheduleNotFoundException()
@@ -118,10 +125,9 @@ def get_test_schedules(db: Session, desired_date, start_time: time, end_time: ti
     return test_schedules
 
 
-def check_remaining_capacity(test_schedules: List[TestSchedule], participant_num: int):
-    for schedule in test_schedules:
-        if schedule.remaining_capacity < participant_num:
-            raise NotEnoughParticipantCapacityException()
+def check_remaining_capacity(test_schedule: TestSchedule, participant_num: int):
+    if test_schedule.remaining_capacity < participant_num:
+        raise NotEnoughParticipantCapacityException()
 
 
 def check_authorization(reservation: Reservation, user: User):
