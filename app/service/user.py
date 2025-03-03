@@ -6,7 +6,12 @@ from app.service.exception.DuplicateNameException import DuplicateNameException
 from app.service.exception.DuplicateUsernameException import DuplicateUsernameException
 
 
-def create_user(db: Session, username: str, password: str, name: str) -> User:
+def create_user(
+        db: Session,
+        username: str,
+        password: str,
+        name: str
+) -> User:
     check_duplicate_user_info(db, username, name)
 
     hashed_password = hash_password(password)
@@ -24,7 +29,11 @@ def create_user(db: Session, username: str, password: str, name: str) -> User:
     return new_user
 
 
-def check_duplicate_user_info(db: Session, username: str, name: str) -> None:
+def check_duplicate_user_info(
+        db: Session,
+        username: str,
+        name: str
+) -> None:
     existing_user = (db
                      .query(User)
                      .filter(or_(User.username == username,

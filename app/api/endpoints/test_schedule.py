@@ -27,11 +27,13 @@ def read_available_test_schedules_endpoint(
         desired_date
     )
 
+    test_schedule_items = [
+        TestScheduleItem(
+            date_time=schedule.date_time,
+            remaining_capacity=schedule.remaining_capacity
+        ) for schedule in available_test_schedules
+    ]
+
     return ReadAvailableTestSchedulesResponse(
-        schedules=[
-            TestScheduleItem(
-                date_time=schedule.date_time,
-                remaining_capacity=schedule.remaining_capacity
-            ) for schedule in available_test_schedules
-        ]
+        schedules=[test_schedule_items]
     )
