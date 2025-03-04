@@ -19,7 +19,11 @@ router = APIRouter()
     description="""
     원하는 날짜에 대해 예약 신청 가능한 시험 일정 목록을 조회합니다.  
     <br>시험 일정은 1시간 단위로 이루어져있으며, 시작 시간 기준입니다. (14:00:00는 14:00:00부터 14:59:59까지의 1시간을 의미합니다)
-    """
+    """,
+    responses={
+        200: {"description": "시험 일정 조회 성공"},
+        404: {"description": "해당 날짜에 대한 시험 일정 데이터가 존재하지 않는 경우"},
+    }
 )
 def read_available_test_schedules_endpoint(
         desired_date: date = Query(

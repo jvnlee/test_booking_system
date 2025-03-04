@@ -15,7 +15,11 @@ router = APIRouter()
     description="""  
     로그인 성공 응답으로 받은 JWT Access Token을 Authorization 헤더에 넣어 요청을 보내면 인증이 필요한 API 호출이 가능해집니다.  
     <br>토큰은 Authorization: Bearer \<token\> 형태로 사용합니다.
-    """
+    """,
+    responses={
+        200: {"description": "로그인 성공"},
+        400: {"description": "username 또는 password가 올바르지 않은 경우"},
+    }
 )
 def login_endpoint(
         request: LoginRequest,

@@ -18,7 +18,13 @@ router = APIRouter()
     description="""
     예약은 시험 시작 3일 전까지 신청 가능합니다.  
     <br>또한, 각 시간대의 잔여 수용 인원만큼만 신청 가능합니다. (동 시간대 최대 수용 인원: 5만명)
-    """
+    """,
+    responses={
+        201: {"description": "예약 신청 성공"},
+        400: {"description": "신청 불가능한 날짜이거나, 수용 가능 인원을 초과한 경우"},
+        401: {"description": "Authorization 헤더를 통한 JWT 인증이 되지 않은 경우"},
+        404: {"description": "신청하려는 날짜와 시간에 대한 시험 일정이 존재하지 않는 경우"}
+    }
 )
 def create_reservation_endpoint(
         request: CreateReservationRequest,
@@ -56,13 +62,17 @@ def create_reservation_endpoint(
     description="""
     기업 고객(COMPANY): 본인이 신청한 예약만 조회 가능합니다.  
     <br>관리자(ADMIN): 모든 예약을 조회할 수 있습니다.
-    """
+    """,
+    responses={
+        200: {"description": "예약 조회 성공"},
+        401: {"description": "Authorization 헤더를 통한 JWT 인증이 되지 않은 경우"}
+    }
 )
 def read_all_reservations_endpoint(
         db: Session = Depends(get_db),
         user: User = Depends(get_current_user),
-        limit: int = Query(10, ge=1, le=100),
-        offset: int = Query(0, ge=0)
+        limit: int = Query(10, ge=1, le=100, description="페이지 당 표시할 예약 개수"),
+        offset: int = Query(0, ge=0, description="페이지 번호")
 ):
     reservations, total_count = read_all_reservations(
         db,
@@ -99,7 +109,14 @@ def read_all_reservations_endpoint(
     description="""
     기업 고객(COMPANY): 본인이 신청한 예약만 수정 가능합니다. 단, 예약 확정 전에만 수정이 가능합니다.  
     <br>관리자(ADMIN): 모든 예약을 수정할 수 있습니다.
-    """
+    """,
+    responses={
+        200: {"description": "예약 수정 성공"},
+        400: {"description": "신청 불가능한 날짜이거나, 수용 가능 인원을 초과한 경우"},
+        401: {"description": "Authorization 헤더를 통한 JWT 인증이 되지 않은 경우"},
+        403: {"description": "본인이 신청하지 않은 예약을 수정하려는 경우"},
+        404: {"description": "요청한 예약 ID에 대한 예약 내역이 존재하지 않는 경우"}
+    }
 )
 def update_reservation_endpoint(
         reservation_id: int,
@@ -139,7 +156,13 @@ def update_reservation_endpoint(
     description="""
     관리자(ADMIN) 전용 기능입니다.  
     <br>예약을 확정하고, 응시 인원을 실제 시험 일정의 잔여 수용 인원에 반영합니다.
-    """
+    """,
+    responses={
+        200: {"description": "예약 확정 성공"},
+        401: {"description": "Authorization 헤더를 통한 JWT 인증이 되지 않은 경우"},
+        403: {"description": "관리지가 아닌 경우"},
+        404: {"description": "요청한 예약 ID에 대한 예약 내역이 존재하지 않는 경우"}
+    }
 )
 def confirm_reservation_endpoint(
         reservation_id: int,
@@ -163,7 +186,13 @@ def confirm_reservation_endpoint(
     summary="예약 삭제",
     description="""
     예약을 삭제(취소 처리)합니다.
-    """
+    """,
+    responses={
+        200: {"description": "예약 삭제 성공"},
+        401: {"description": "Authorization 헤더를 통한 JWT 인증이 되지 않은 경우"},
+        403: {"description": "본인이 신청하지 않은 예약을 삭제하려는 경우"},
+        404: {"description": "요청한 예약 ID에 대한 예약 내역이 존재하지 않는 경우"}
+    }
 )
 def cancel_reservation_endpoint(
         reservation_id: int,

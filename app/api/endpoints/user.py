@@ -15,7 +15,11 @@ router = APIRouter()
     summary="회원가입",
     description="""
     회원가입 시 자동적으로 기업 고객(COMPANY)으로 가입됩니다.
-    """
+    """,
+    responses={
+        201: {"description": "회원 가입 성공"},
+        400: {"description": "username 또는 name 항목이 중복된 경우"},
+    }
 )
 def create_user_endpoint(
         request: CreateUserRequest,
