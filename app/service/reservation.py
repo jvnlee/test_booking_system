@@ -52,7 +52,10 @@ def read_all_reservations(
     )
 
     if user.role != UserRole.ADMIN:
-        query = query.filter(Reservation.user_id == user.id)
+        query = query.filter(
+            Reservation.user_id == user.id,
+            Reservation.status != ReservationStatus.DELETED
+        )
 
     total_count = query.count()
 
