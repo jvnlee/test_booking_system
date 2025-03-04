@@ -103,7 +103,7 @@ def read_all_reservations_endpoint(
 
 
 @router.put(
-    path="/{reservation-id}",
+    path="/{reservation_id}",
     response_model=ReservationItem,
     status_code=200,
     summary="예약 수정",
@@ -121,7 +121,7 @@ def read_all_reservations_endpoint(
 )
 def update_reservation_endpoint(
         request: UpdateReservationRequest,
-        reservation_id: int = Path(..., alias="reservation-id", description="예약 번호"),
+        reservation_id: int = Path(..., description="예약 번호"),
         db: Session = Depends(get_db),
         user: User = Depends(get_current_user)
 ):
@@ -150,7 +150,7 @@ def update_reservation_endpoint(
 
 
 @router.patch(
-    path="/{reservation-id}/confirm",
+    path="/{reservation_id}/confirm",
     status_code=200,
     summary="예약 확정",
     description="""
@@ -165,7 +165,7 @@ def update_reservation_endpoint(
     }
 )
 def confirm_reservation_endpoint(
-        reservation_id: int = Path(..., alias="reservation-id", description="예약 번호"),
+        reservation_id: int = Path(..., description="예약 번호"),
         db: Session = Depends(get_db),
         _: User = Depends(is_admin_user)
 ):
@@ -176,7 +176,7 @@ def confirm_reservation_endpoint(
 
 
 @router.delete(
-    path="/{reservation-id}",
+    path="/{reservation_id}",
     status_code=200,
     summary="예약 삭제",
     description="""
@@ -191,7 +191,7 @@ def confirm_reservation_endpoint(
     }
 )
 def delete_reservation_endpoint(
-        reservation_id: int = Path(..., alias="reservation-id", description="예약 번호"),
+        reservation_id: int = Path(..., description="예약 번호"),
         db: Session = Depends(get_db),
         user: User = Depends(get_current_user)
 ):
