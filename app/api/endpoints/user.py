@@ -9,7 +9,7 @@ router = APIRouter()
 
 
 @router.post(
-    "/",
+    path="",
     response_model=CreateUserResponse,
     status_code=201,
     summary="회원가입",

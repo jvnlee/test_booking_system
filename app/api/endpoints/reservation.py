@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, Query
+from fastapi import APIRouter, Depends, Query, Path
 from sqlalchemy.orm import Session
 from app.api.deps import get_db, get_current_user, is_admin_user
 from app.model import User
@@ -11,7 +11,7 @@ router = APIRouter()
 
 
 @router.post(
-    "/",
+    path="",
     response_model=ReservationItem,
     status_code=201,
     summary="예약 신청",
@@ -55,13 +55,14 @@ def create_reservation_endpoint(
 
 
 @router.get(
-    "/",
+    path="",
     response_model=ReadReservationsResponse,
     status_code=200,
     summary="예약 조회",
     description="""
     기업 고객(COMPANY): 본인이 신청한 예약만 조회 가능합니다.  
-    <br>관리자(ADMIN): 모든 예약을 조회할 수 있습니다.
+    <br>관리자(ADMIN): 모든 예약을 조회할 수 있습니다.  
+    <br>* 페이지네이션을 사용합니다.
     """,
     responses={
         200: {"description": "예약 조회 성공"},
@@ -102,7 +103,7 @@ def read_all_reservations_endpoint(
 
 
 @router.put(
-    "/{reservation_id}",
+    path="/{reservation-id}",
     response_model=ReservationItem,
     status_code=200,
     summary="예약 수정",
@@ -119,8 +120,8 @@ def read_all_reservations_endpoint(
     }
 )
 def update_reservation_endpoint(
-        reservation_id: int,
         request: UpdateReservationRequest,
+        reservation_id: int = Path(..., alias="reservation-id", description="예약 번호"),
         db: Session = Depends(get_db),
         user: User = Depends(get_current_user)
 ):
@@ -149,13 +150,12 @@ def update_reservation_endpoint(
 
 
 @router.patch(
-    "/{reservation_id}/confirm",
-    response_model=UpdateReservationStatusResponse,
+    path="/{reservation-id}/confirm",
     status_code=200,
     summary="예약 확정",
     description="""
-    관리자(ADMIN) 전용 기능입니다.  
-    <br>예약을 확정하고, 응시 인원을 실제 시험 일정의 잔여 수용 인원에 반영합니다.
+    예약을 확정하고, 응시 인원을 실제 시험 일정의 잔여 수용 인원에 반영합니다.  
+    <br>* 관리자(ADMIN) 전용 기능입니다.
     """,
     responses={
         200: {"description": "예약 확정 성공"},
@@ -165,7 +165,7 @@ def update_reservation_endpoint(
     }
 )
 def confirm_reservation_endpoint(
-        reservation_id: int,
+        reservation_id: int = Path(..., alias="reservation-id", description="예약 번호"),
         db: Session = Depends(get_db),
         _: User = Depends(is_admin_user)
 ):

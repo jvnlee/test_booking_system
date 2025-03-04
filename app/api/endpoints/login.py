@@ -8,7 +8,7 @@ router = APIRouter()
 
 
 @router.post(
-    "/login",
+    path="/login",
     response_model=LoginResponse,
     status_code=200,
     summary="로그인",

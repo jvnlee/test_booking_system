@@ -12,7 +12,7 @@ router = APIRouter()
 
 
 @router.get(
-    "/",
+    path="",
     response_model=ReadAvailableTestSchedulesResponse,
     status_code=200,
     summary="시험 일정 조회",
@@ -22,6 +22,7 @@ router = APIRouter()
     """,
     responses={
         200: {"description": "시험 일정 조회 성공"},
+        401: {"description": "Authorization 헤더를 통한 JWT 인증이 되지 않은 경우"},
         404: {"description": "해당 날짜에 대한 시험 일정 데이터가 존재하지 않는 경우"},
     }
 )
