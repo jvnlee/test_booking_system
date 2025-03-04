@@ -8,7 +8,7 @@ from app.model.user import UserRole
 from app.exception.invalid_token_exception import InvalidTokenException
 from app.exception.not_authorized_exception import NotAuthorizedException
 
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="login")
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/login")
 
 
 def get_db():
