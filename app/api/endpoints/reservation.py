@@ -113,7 +113,7 @@ def read_all_reservations_endpoint(
     """,
     responses={
         200: {"description": "예약 수정 성공"},
-        400: {"description": "신청 불가능한 날짜이거나, 수용 가능 인원을 초과한 경우"},
+        400: {"description": "수용 가능 인원을 초과한 경우 또는 이미 확정/삭제 처리가 된 예약인 경우"},
         401: {"description": "Authorization 헤더를 통한 JWT 인증이 되지 않은 경우"},
         403: {"description": "본인이 신청하지 않은 예약을 수정하려는 경우"},
         404: {"description": "요청한 예약 ID에 대한 예약 내역이 존재하지 않는 경우"}
@@ -159,6 +159,7 @@ def update_reservation_endpoint(
     """,
     responses={
         200: {"description": "예약 확정 성공"},
+        400: {"description": "이미 확정/삭제 처리가 된 예약인 경우"},
         401: {"description": "Authorization 헤더를 통한 JWT 인증이 되지 않은 경우"},
         403: {"description": "관리지가 아닌 경우"},
         404: {"description": "요청한 예약 ID에 대한 예약 내역이 존재하지 않는 경우"}
@@ -185,6 +186,7 @@ def confirm_reservation_endpoint(
     """,
     responses={
         200: {"description": "예약 삭제 성공"},
+        400: {"description": "이미 확정/삭제 처리가 된 예약인 경우"},
         401: {"description": "Authorization 헤더를 통한 JWT 인증이 되지 않은 경우"},
         403: {"description": "본인이 신청하지 않은 예약을 삭제하려는 경우"},
         404: {"description": "요청한 예약 ID에 대한 예약 내역이 존재하지 않는 경우"}
