@@ -52,7 +52,7 @@ class ReservationItem(BaseModel):
     reserved_times: List[time] = Field(
         ...,
         alias="reservedTimes",
-        examples=["14:00:00", "15:00:00"],
+        example=["14:00:00", "15:00:00"],
         description="예약된 시험 시간대 목록 (예시는 14:00:00 ~ 14:59:59와 15:00:00 ~ 15:59:59 총 2개의 시간대를 나타냄"
     )
     reserved_participant_num: int = Field(
@@ -112,16 +112,3 @@ class UpdateReservationRequest(BaseModel):
         examples=["20000"],
         description="시험 응시 인원"
     )
-
-
-class UpdateReservationStatusResponse(BaseModel):
-    reservation_status: ReservationStatus = Field(
-        ...,
-        alias="reservationStatus",
-        examples=["CONFIRMED", "CANCELLED"],
-        description="예약 상태"
-    )
-
-    class Config:
-        populate_by_name = True
-        by_alias = True

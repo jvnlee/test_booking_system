@@ -123,12 +123,9 @@ def confirm_reservation(
     reservation.status = ReservationStatus.CONFIRMED
 
     db.commit()
-    db.refresh(reservation)
-
-    return reservation.status
 
 
-def cancel_reservation(
+def delete_reservation(
         db: Session,
         user: User,
         reservation_id: int
@@ -146,12 +143,9 @@ def cancel_reservation(
     check_authorization(reservation, user)
     check_updatable_status(reservation)
 
-    reservation.status = ReservationStatus.CANCELLED
+    reservation.status = ReservationStatus.DELETED
 
     db.commit()
-    db.refresh(reservation)
-
-    return reservation.status
 
 
 def check_reservation_deadline(desired_date: date):

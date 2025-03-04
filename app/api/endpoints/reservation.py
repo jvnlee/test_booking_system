@@ -3,9 +3,9 @@ from sqlalchemy.orm import Session
 from app.api.deps import get_db, get_current_user, is_admin_user
 from app.model import User
 from app.schema.reservation import ReservationItem, CreateReservationRequest, ReadReservationsResponse, \
-    UpdateReservationRequest, UpdateReservationStatusResponse
+    UpdateReservationRequest
 from app.service.reservation import create_reservation, read_all_reservations, update_reservation, \
-    cancel_reservation, confirm_reservation
+    delete_reservation, confirm_reservation
 
 router = APIRouter()
 
@@ -169,23 +169,19 @@ def confirm_reservation_endpoint(
         db: Session = Depends(get_db),
         _: User = Depends(is_admin_user)
 ):
-    confirmed_status = confirm_reservation(
+    confirm_reservation(
         db,
-        reservation_id,
-    )
-
-    return UpdateReservationStatusResponse(
-        reservation_status=confirmed_status
+        reservation_id
     )
 
 
-@router.patch(
-    "/{reservation_id}/cancel",
-    response_model=UpdateReservationStatusResponse,
+@router.delete(
+    path="/{reservation-id}",
     status_code=200,
     summary="예약 삭제",
     description="""
-    예약을 삭제(취소 처리)합니다.
+    기업 고객(COMPANY): 본인이 신청한 예약만 삭제 가능합니다. 단, 예약 확정 전에만 삭제가 가능합니다.  
+    <br>관리자(ADMIN): 모든 예약을 삭제할 수 있습니다.
     """,
     responses={
         200: {"description": "예약 삭제 성공"},
@@ -194,17 +190,13 @@ def confirm_reservation_endpoint(
         404: {"description": "요청한 예약 ID에 대한 예약 내역이 존재하지 않는 경우"}
     }
 )
-def cancel_reservation_endpoint(
-        reservation_id: int,
+def delete_reservation_endpoint(
+        reservation_id: int = Path(..., alias="reservation-id", description="예약 번호"),
         db: Session = Depends(get_db),
         user: User = Depends(get_current_user)
 ):
-    cancelled_status = cancel_reservation(
+    delete_reservation(
         db,
         user,
         reservation_id,
-    )
-
-    return UpdateReservationStatusResponse(
-        reservation_status=cancelled_status
     )
